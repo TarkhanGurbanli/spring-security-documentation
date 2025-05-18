@@ -86,5 +86,112 @@ Hər voter səs verir:
 
 ---
 
+**📍 F) ExceptionTranslationFilter**
+Əgər authentication və ya authorization zamanı istisna baş verərsə:
+
+- **AccessDeniedException**
+- **AuthenticationException**
+
+Bu filter bu exception-u tutub:
+- ya login səhifəsinə yönləndirir
+- ya JSON error response qaytarır
+
+---
+
+**📍 G) LogoutFilter**
+Logout request-lərini qarşılayır.
+
+- SecurityContext-i təmizləyir.
+- Session-ları bağlayır.
+- İstəyə uyğun redirect və ya mesaj göndərir.
+
+---
+
+## 📌 3️⃣ Təxminən Axış Sxemi
+
+```css
+[Client Request]
+      ↓
+[FilterChainProxy]
+      ↓
+[SecurityFilterChain (SecurityContextPersistenceFilter)]
+      ↓
+[UsernamePasswordAuthenticationFilter]
+      ↓
+[AuthenticationManager → AuthenticationProvider]
+      ↓
+[SecurityContextHolder.setContext()]
+      ↓
+[ExceptionTranslationFilter]
+      ↓
+[FilterSecurityInterceptor (AccessDecisionManager)]
+      ↓
+[Controller]
+      ↓
+[Response]
+      ↓
+[SecurityContextPersistenceFilter (clearContext)]
+      ↓
+[Client]
+```
+
+---
+
+## 📌 4️⃣ Digər Əhəmiyyətli Class-lar
+| Class                  | Funksiya                                                                         |
+| :--------------------- | :------------------------------------------------------------------------------- |
+| **Authentication**     | User-in authentication məlumatını saxlayır (principal, credentials, authorities) |
+| **GrantedAuthority**   | User-in icazələri (role və ya authority)                                         |
+| **UserDetails**        | DB-dən gələn user məlumatlarını saxlayır                                         |
+| **UserDetailsService** | Username ilə DB-dən user məlumatlarını çıxaran service                           |
+
+---
+
+## 📌 5️⃣ Spring Security Context Lifecycle
+
+- Request gələndə SecurityContextPersistenceFilter `SecurityContextHolder`-dan context-i oxuyur.
+- Authentication filter-ləri authentication edəndə Authentication obyekti context-ə qoyur.
+- Authorization zamanı bu context-dəki Authentication yoxlanılır.
+- Request bitəndə SecurityContextPersistenceFilter context-i təmizləyir.
+
+---
+
+## 📌 6️⃣ SecurityContextHolder Strategiyası
+
+`ThreadLocal-based context strategy` istifadə edir.
+Alternativ olaraq:
+- MODE_INHERITABLETHREADLOCAL
+- MODE_GLOBAL
+strategiyalarını seçə bilərsən.
+
+---
+
+## 📌 7️⃣ Çox istifadə olunan Filter-lər
+
+| Filter                                 | İşlədiyi yer                     |
+| :------------------------------------- | :------------------------------- |
+| `SecurityContextPersistenceFilter`     | Başlanğıc və bitiş               |
+| `UsernamePasswordAuthenticationFilter` | /login request-i                 |
+| `BasicAuthenticationFilter`            | HTTP Basic Auth üçün             |
+| `JwtAuthenticationFilter`              | JWT token-lə authentication üçün |
+| `ExceptionTranslationFilter`           | Exception handling üçün          |
+| `FilterSecurityInterceptor`            | Authorization üçün               |
+| `LogoutFilter`                         | /logout request-i                |
 
 
+---
+
+## 📌 Nəticə
+
+Spring Security:
+
+- ✅ Servlet Filter əsaslıdır
+- ✅ SecurityContext-i ThreadLocal-da saxlayır
+- ✅ Authentication və Authorization fərqli mərhələlərdə olur
+- ✅ FilterChainProxy → SecurityFilterChain → Filter axışı ilə işləyir
+- ✅ AuthenticationManager və Provider-lər authentication edir
+- ✅ AccessDecisionManager authorization edir
+- ✅ ExceptionTranslationFilter error handling edir
+- ✅ SecurityContextPersistenceFilter context lifecycle-ı idarə edir
+
+---
