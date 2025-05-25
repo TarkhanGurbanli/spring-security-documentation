@@ -297,3 +297,25 @@ Controller-dən çıxan cavab:
 
 - Response obyektini götürüb HTTP cavab halında client-ə qaytarır
 
+---
+
+## 🌟 Spring Security Filtrləri
+Spring Security filtrləri hər bir HTTP sorğunu qarşılayaraq yoxlayır ki, həmin sorğu üçün autentifikasiya (doğrulama) tələb olunur, ya yox. Əgər autentifikasiya tələb olunursa, istifadəçi login səhifəsinə yönləndirilir və ya əvvəlki autentifikasiya zamanı yadda saxlanılmış məlumatlardan istifadə edilir.
+
+## 🌟 Autentifikasiya (Authentication)
+Məsələn, UsernamePasswordAuthenticationFilter kimi filtrlər HTTP sorğusundan istifadəçi adı və şifrəni çıxararaq Authentication tipində obyekt yaradır. Bu obyekt Spring Security-də autentifikasiya olunmuş istifadəçi məlumatlarının əsasını təşkil edir.
+
+## 🌟 Autentifikasiya Meneceri (AuthenticationManager)
+Filtrdən gələn sorğunu qəbul etdikdən sonra, istifadəçi məlumatlarının doğrulanmasını uyğun autentifikasiya təminatçılarına (AuthenticationProvider) yönləndirir. Bir tətbiqdə bir neçə təminatçı ola bilər və AuthenticationManager onların idarəsini üzərinə götürür. Sadə dillə desək, bu komponent autentifikasiyaya cavabdehdir.
+
+## 🌟 Autentifikasiya Təminatçısı (AuthenticationProvider)
+AuthenticationProvider autentifikasiya üçün lazım olan əsas doğrulama məntiqini özündə birləşdirir.
+
+## 🌟 İstifadəçi Məlumatları Meneceri/Xidməti (UserDetailsManager / UserDetailsService)
+Bu komponentlər istifadəçi məlumatlarını verilənlər bazasından və ya digər yaddaş sistemlərindən əldə etmək, yeniləmək və ya silmək üçün istifadə olunur.
+
+## 🌟 Şifrə Kodlayıcı (PasswordEncoder)
+Bu xidmət interfeysi şifrələrin kodlaşdırılması və həşlənməsi üçün istifadə olunur. Əks halda, parollar düz mətn (plain text) şəklində saxlanmalı olar ki, bu da təhlükəlidir ☹️
+
+## 🌟 Təhlükəsizlik Konteksti (SecurityContext)
+Sorğu uğurla autentifikasiya olunduqdan sonra, istifadəçiyə aid məlumatlar SecurityContext adlı lokal mühitdə saxlanılır. Bu mühit SecurityContextHolder tərəfindən idarə olunur və həmin istifadəçi ilə əlaqəli sonrakı sorğularda istifadə olunur.
