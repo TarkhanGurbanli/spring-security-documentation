@@ -195,3 +195,105 @@ Spring Security:
 - ✅ SecurityContextPersistenceFilter context lifecycle-ı idarə edir
 
 ---
+
+## 📌 Servlet və Filter nədir?
+
+Əslində Java EE dünyasında:
+
+- **Servlet** → Web serverdə (Tomcat, Jetty və s.) işləyən server-side proqram komponentidir, HTTP request-ləri qəbul edib cavab qaytarmaq üçün.
+- **Filter** → Servlet-lərdən əvvəl və ya sonra işləyən aralıq interceptor-dur. Request və response üzərində müdaxilə etmək üçün.
+
+Yəni request gələndə ilk Filter-lərdən keçir, sonra Servlet-ə çatır.
+Filter-lər:
+
+- request gələndə əvvəl işləyir
+- cavab gedəndə də sonuncu işləyə bilir
+
+### 📌 Spring Security-də Servlet və Filter-lər necə işləyir?
+
+#### 📌 1️⃣ DispatcherServlet nədir?
+
+Spring MVC-də bütün HTTP request-lər DispatcherServlet-ə düşür. O isə controller-ləri çağırır.
+
+#### 📌 2️⃣ Security Filter Chain nədir?
+
+Spring Security bütün təhlükəsizlik tədbirlərini SecurityFilterChain deyilən bir sıra filter-lərlə təşkil edir.
+Bu filter-lər Servlet container-ə (Tomcat və s.) qeyd olunur və hər request gələndə sıra ilə icra olunur.
+
+## 📌 Security FilterChain Axını (Default)
+Gəlin nümunə bir axın göstərim:
+
+**Client → (Tomcat) → SecurityFilterChain → DispatcherServlet → Controller**
+
+SecurityFilterChain içində:
+
+- UsernamePasswordAuthenticationFilter
+- BasicAuthenticationFilter
+- CsrfFilter
+- ExceptionTranslationFilter
+- SecurityContextPersistenceFilter
+  və s. (bunların sırası vacibdir və öz order-i var)
+
+### 📌 Tam axın: Client → Server → Servlet Container → Backend → Response
+
+#### 📌 1️⃣ Client request göndərir
+Client (browser, Postman və s.) HTTP protokolu ilə serverə sorğu göndərir.
+
+Məsələn:
+`GET http://localhost:8080/users`
+
+#### 📌 2️⃣ Servlet Container nədir?
+Servlet Container (məsələn Tomcat, Jetty, Undertow) Java web tətbiqlərini işlədən moduldu.
+
+Vəzifəsi:
+- Client-dən gələn HTTP sorğusunu qəbul etmək
+- Onu `ServletRequest` obyektinə çevirmək
+- Daxili filter və servlet-lərə ötürmək
+- Cavabı `ServletResponse` obyektinə yığıb client-ə göndərmək
+
+#### 📌 3️⃣ ServletRequest və ServletResponse
+- **ServletRequest** → Client-in göndərdiyi sorğunun məlumatlarını saxlayır (URL, header, parametrlər, body və s.)
+- **ServletResponse** → Serverin client-ə göndərəcəyi cavabın məlumatlarını saxlayır (status code, header, body və s.)
+
+####  4️⃣ Filter-lər işə düşür
+Servlet Container əvvəlcə öz qeyd olunan Filter-lər siyahısını (Filter Chain) yoxlayır.
+Filter-lər:
+
+- Request gələndə öncə işləyir.
+- Response göndəriləndə sonda işləyə bilər.
+
+Spring Security burada öz filter-lərini qeyd edir.
+Məsələn:
+
+- Auth yoxlanışı
+- CSRF
+- Exception handler
+- Session yoxlanışı və s.
+
+#### 📌 5️⃣ DispatcherServlet işə düşür
+Request filter-lərdən keçəndən sonra Spring MVC-nin DispatcherServlet-inə çatır.
+
+DispatcherServlet:
+
+- Request-i qəbul edir
+- Hansı controller və method-un bu request-i qarşılayacağını müəyyən edir (routing)
+- Controller method-u çağırır
+
+#### 📌 6️⃣ Controller işini görür
+Controller:
+
+- Request parametrlərini götürür
+- Servis və ya repo çağırır
+- İşini görüb ResponseEntity və ya başqa response qaytarır
+
+#### 📌 7️⃣ Cavab DispatcherServlet-ə qayıdır
+Controller-dən çıxan cavab:
+
+- `DispatcherServlet`-ə qayıdır
+- Oradan da Filter Chain-ə ötürülür (əgər response-də müdaxilə edən filter varsa, burada işə düşər)
+
+#### 📌 8️⃣ ServletResponse client-ə göndərilir
+Ən sonda Servlet Container:
+
+- Response obyektini götürüb HTTP cavab halında client-ə qaytarır
+
