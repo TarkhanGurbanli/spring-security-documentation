@@ -319,3 +319,33 @@ Bu xidmət interfeysi şifrələrin kodlaşdırılması və həşlənməsi üç�
 
 ## 🌟 Təhlükəsizlik Konteksti (SecurityContext)
 Sorğu uğurla autentifikasiya olunduqdan sonra, istifadəçiyə aid məlumatlar SecurityContext adlı lokal mühitdə saxlanılır. Bu mühit SecurityContextHolder tərəfindən idarə olunur və həmin istifadəçi ilə əlaqəli sonrakı sorğularda istifadə olunur.
+
+---
+
+## 📌 SessionCreationPolicy Enum Değerleri
+- `STATELESS` -> Hiç session oluşturulmaz (JWT için ideal).
+- `ALWAYS`	-> Her zaman session oluşturur (varsa bile yenisi yaratılır).
+- `IF_REQUIRED` ->	Sadece gerekirse session oluşturur (default davranış).
+- `NEVER` ->	Session oluşturmaz, ancak zaten varsa kullanır.
+
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 👈 Oturum tutma!
+            )
+            .csrf(csrf -> csrf.disable()) // CSRF'yı kapat
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().authenticated()
+            )
+            .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt); // JWT kullanımı
+
+        return http.build();
+    }
+}
+```
