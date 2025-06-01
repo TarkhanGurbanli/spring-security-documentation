@@ -359,5 +359,10 @@ public class SecurityConfig {
 
 ---
 
+![security5](https://github.com/user-attachments/assets/7210a145-e653-4108-b609-c9b0ddbd753f)
+
+
+---
+
 ![security_image3](https://github.com/user-attachments/assets/88541bcd-3465-4d32-97ae-3e97a8ad4269)
 
