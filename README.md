@@ -349,3 +349,5 @@ public class SecurityConfig {
     }
 }
 ```
+![Screenshot 2025-05-25 184328](https://github.com/user-attachments/assets/b5892bb1-0f3e-4d96-8cac-97765eba9941)
+
