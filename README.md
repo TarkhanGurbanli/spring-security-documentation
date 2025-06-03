@@ -366,3 +366,7 @@ public class SecurityConfig {
 
 ![security_image3](https://github.com/user-attachments/assets/88541bcd-3465-4d32-97ae-3e97a8ad4269)
 
+---
+
+![Screenshot 2025-06-03 152914](https://github.com/user-attachments/assets/b435c992-9e8c-4d67-8050-10b5103a1b56)
+
